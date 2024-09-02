@@ -17,4 +17,6 @@ module.exports = (server) => {
 
   // Update a user info
   server.route("put", "/api/user", User.updateUser);
+
+  server.route("post", "/api/upload-video", User.uploadVideo);
 };

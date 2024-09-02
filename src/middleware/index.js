@@ -11,18 +11,22 @@ exports.authenticate = (req, res, next) => {
 
   if (routesToAuthenticate.indexOf(req.method + " " + req.url) !== -1) {
     // If we have a token cookie, then save the userId to the req object
+
     if (req.headers.cookie) {
       const token = req.headers.cookie.split("=")[1];
+      console.log("token", token);
 
       DB.update();
       const session = DB.sessions.find((session) => session.token === token);
+      console.log("session", session);
       if (session) {
         req.userId = session.userId;
         return next();
       }
+    } else {
+      console.log("HIIII");
+      return res.status(401).json({ error: "Unauthorized" });
     }
-
-    return res.status(401).json({ error: "Unauthorized" });
   } else {
     next();
   }
