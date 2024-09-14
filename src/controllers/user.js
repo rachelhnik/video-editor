@@ -81,45 +81,11 @@ const updateUser = (req, res) => {
   });
 };
 
-const uploadVideo = async (req, res, handleErr) => {
-  const filename = req.headers.filename;
-  const extension = path.extname(filename).substring(1).toLowerCase();
-  const name = path.parse(filename).name;
-  const videoId = crypto.randomBytes(4).toString("hex");
-  try {
-    await fs.mkdir(`./storage/${videoId}`);
-    const fullpath = `./storage/${videoId}/original.${extension}`;
-    const file = await fs.open(fullpath, "w");
-    const fileStream = file.createWriteStream();
-    await pipeline(req, fileStream);
-    DB.update();
-    DB.videos.unshift({
-      id: DB.videos.length,
-      videoId,
-      name,
-      extension,
-      userId: req.userId,
-      extractedAudio: false,
-      resizes: {},
-    });
-    DB.save();
-
-    res.status(201).json({
-      status: "success",
-      message: "The file was uploaded successfully!",
-    });
-  } catch (error) {
-    await util.deleteFolder(`./storage/${videoId}`);
-    if (error.code !== "ECONNRESET") return handleErr(error);
-  }
-};
-
 const controller = {
   logUserIn,
   logUserOut,
   sendUserInfo,
   updateUser,
-  uploadVideo,
 };
 
 module.exports = controller;

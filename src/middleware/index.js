@@ -14,11 +14,8 @@ exports.authenticate = (req, res, next) => {
 
     if (req.headers.cookie) {
       const token = req.headers.cookie.split("=")[1];
-      console.log("token", token);
-
       DB.update();
       const session = DB.sessions.find((session) => session.token === token);
-      console.log("session", session);
       if (session) {
         req.userId = session.userId;
         return next();
